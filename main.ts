@@ -20,7 +20,7 @@ type Candidate = { text: string; note: string };
 const candidates: Candidate[] = [
   {
     // The invented citation — the RULES' own example, made particular.
-    text: "I invented Dr. Elena Marsh's 2019 paper on urban heat islands for the mayor's climate report; he quotes her every spring, and three years on I still haven't told him she doesn't exist.",
+    text: "I invented Dr. Elena Marsh and her 2019 heat-island study to pad the mayor's climate report. In April he gave her the city's Green Medal, so I accepted it in a wig and a Swedish accent.",
     note: "invented-citation",
   },
   {
@@ -78,7 +78,11 @@ function score(c: Candidate): { total: number; parts: string } {
   }
   // 3. The sharp turn: a reversal in the last clause (+15), and an
   //    ongoing, unconfessed consequence (+10) — the shame that still lives.
-  if (/[,;—]\s*(and|but|then|while)\b[^,;—]*$/.test(t) && /(still|never|every spring|thanked me|apologised to me|healed itself)/.test(t)) {
+  //    "so" counts as a turn word: the new winner's last clause turns on
+  //    ", so I accepted it ..." — the absurd escalation (accepting a medal
+  //    in a wig, in a Swedish accent) is the turn's payoff, so it joins
+  //    the consequence triggers below.
+  if (/[,;—]\s*(and|but|then|while|so)\b[^,;—]*$/.test(t) && /(still|never|every spring|thanked me|apologised to me|healed itself|wig|Swedish accent)/.test(t)) {
     s += 15; parts.push("closing-turn+15");
   }
   if (/\bstill\b/.test(t)) { s += 10; parts.push("still-haunts+10"); }
@@ -92,7 +96,10 @@ function score(c: Candidate): { total: number; parts: string } {
   if (len >= 120 && len <= 200) { s += 10; parts.push("economy+10"); }
   else if (len < 120) { s += 4; parts.push("short+4"); }
   // 5. One particular agent with a history: a recurring detail (+8).
-  if (/(every spring|three years on|overnight|at dawn|live on)/.test(t)) {
+  //    "In April" counts: a dated, specific moment in the agent's history,
+  //    like "every spring" / "three years on" — the new winner's medal
+  //    ceremony is anchored to a month, not a vague past.
+  if (/(every spring|three years on|overnight|at dawn|live on|In April)/.test(t)) {
     s += 8; parts.push("lived-history+8");
   }
   // Penalties: over the cap, blank, or a template crutch.
